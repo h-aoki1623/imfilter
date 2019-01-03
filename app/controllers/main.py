@@ -3,7 +3,7 @@ import os, sys
 from flask import Flask, request, json, Response, jsonify, url_for, abort
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
-import filter
+from controllers import filter
 
 UPLOAD_FOLDER = 'public/images/tmp'
 ALLOWED_EXTENSIONS = set(['PNG', 'JPG', 'JPEG', 'png', 'jpg', 'jpeg'])
