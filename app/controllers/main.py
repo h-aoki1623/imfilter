@@ -25,7 +25,20 @@ def filter_image():
         abort(400)
 
     stream = img_file.stream
-    filtered_img = filter.apply_filter(stream)
+    filtered_img = filter.apply_filter(stream, 'comic')
+    return Response(response=filtered_img, content_type='image/jpeg')
+
+@app.route('/filter/anime', methods = ['POST'])
+def filter_image():
+    #app.logger.debug(request.files)
+    # パラメータ名のチェック
+
+    img_file = request.files['image']
+    if not img_file or not allowed_file(img_file.filename):
+        abort(400)
+
+    stream = img_file.stream
+    filtered_img = filter.apply_filter(stream, 'anime')
     return Response(response=filtered_img, content_type='image/jpeg')
 
 @app.errorhandler(400)

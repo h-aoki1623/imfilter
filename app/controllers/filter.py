@@ -7,18 +7,22 @@ import numpy as np
 IMAGE_FOLDER = 'app/assets/images'
 UPLOAD_FOLDER = 'public/images/tmp'
 
-def apply_filter(img_stream):
+def apply_filter(img_stream, type):
     # データ形式の変換
     img_array = np.asarray(bytearray(img_stream.read()), dtype=np.uint8)
     img = cv2.imdecode(img_array, 1)
 
-    # スクリーントーン画像の読み込み
-    SCREEN_FILENAME = 'screen_2_600.jpg'
-    screen_path = os.path.join(IMAGE_FOLDER, SCREEN_FILENAME)
-    screen = cv2.imread(screen_path)
+    filtered_img = None
 
-    # 画像の漫画化
-    filtered_img = comic_filter(img, screen, 60, 150)
+    if type == 'comic':
+        # スクリーントーン画像の読み込み
+        SCREEN_FILENAME = 'screen_2_600.jpg'
+        screen_path = os.path.join(IMAGE_FOLDER, SCREEN_FILENAME)
+        screen = cv2.imread(screen_path)
+        # 画像の漫画化
+        filtered_img = comic_filter(img, screen, 60, 150)
+    elif type == 'anime':
+        filtered_img = comic_filter(img, 30)
 
     # 画像の一時保存
     id = str(count_files(UPLOAD_FOLDER))
@@ -55,6 +59,27 @@ def comic_filter(src, screen, th1=60, th2=150):
 
     # 三値画像と輪郭画像を合成
     return cv2.bitwise_and(gray, edge)
+
+# アニメフィルタ
+def anime_filter(img, K=30):
+    # グレースケール変換
+    gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+
+    # ぼかしでノイズ低減
+    edge = cv2.blur(gray, (3, 3))
+
+    # Cannyアルゴリズムで輪郭抽出
+    edge = cv2.Canny(edge, 50, 150, apertureSize=3)
+
+    # 輪郭画像をRGB色空間に変換
+    edge = cv2.cvtColor(edge, cv2.COLOR_GRAY2BGR)
+
+    # 画像の減色処理
+    img = np.array(img/K, dtype=np.uint8)
+    img = np.array(img*K, dtype=np.uint8)
+
+    # 差分を返す
+    return cv2.subtract(img, edge)
 
 def count_files(target_dir_name):
     #カウンタの初期化
