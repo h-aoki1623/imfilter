@@ -22,7 +22,7 @@ def apply_filter(img_stream, type):
         # 画像の漫画化
         filtered_img = comic_filter(img, screen, 60, 150)
     elif type == 'anime':
-        filtered_img = comic_filter(img, 30)
+        filtered_img = anime_filter(img, 30)
 
     # 画像の一時保存
     id = str(count_files(UPLOAD_FOLDER))
