@@ -74,12 +74,34 @@ def anime_filter(img, K=30):
     # 輪郭画像をRGB色空間に変換
     edge = cv2.cvtColor(edge, cv2.COLOR_GRAY2BGR)
 
-    # 画像の減色処理
-    img = np.array(img/K, dtype=np.uint8)
-    img = np.array(img*K, dtype=np.uint8)
+    # 画像の領域分割
+    img = sub_color(img, K)
 
     # 差分を返す
     return cv2.subtract(img, edge)
+
+# 減色処理
+def sub_color(src, K):
+    # 次元数を1落とす
+    Z = src.reshape((-1,3))
+
+    # float32型に変換
+    Z = np.float32(Z)
+
+    # 基準の定義
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+
+    # K-means法で減色
+    ret, label, center = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+
+    # UINT8に変換
+    center = np.uint8(center)
+
+    res = center[label.flatten()]
+
+    # 配列の次元数と入力画像と同じに戻す
+    return res.reshape((src.shape))
+
 
 def count_files(target_dir_name):
     #カウンタの初期化
