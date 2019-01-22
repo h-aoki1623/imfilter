@@ -29,7 +29,7 @@ def filter_image():
     return Response(response=filtered_img, content_type='image/jpeg')
 
 @app.route('/filter/anime', methods = ['POST'])
-def filter_image():
+def filter_image2():
     #app.logger.debug(request.files)
     # パラメータ名のチェック
 
